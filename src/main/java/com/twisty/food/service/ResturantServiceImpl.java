@@ -95,18 +95,26 @@ public class ResturantServiceImpl implements ResturantService{
 
     @Override
     public RestaurantDto addFavorites(Long restaurantId, User user) throws Exception {
+        boolean isFavorites = false;
         Restaurant restaurant =getRestaurantById(restaurantId);
         RestaurantDto restaurantDto = new RestaurantDto();
         restaurantDto.setDescription(restaurant.getDescription());
         restaurantDto.setImages(restaurant.getImages());
         restaurantDto.setId(restaurant.getId());
         restaurantDto.setTitle(restaurant.getRestaurantName());
-        if(user.getFavorites().contains(restaurantDto))
+
+        for(RestaurantDto favorite : user.getFavorites())
         {
-            user.getFavorites().remove(restaurantDto);
+            if(favorite.getId().equals(restaurantDto.getId()))
+            {
+                isFavorites = true;
+                 break;
+            }
         }
-        else {
+        if(isFavorites == false) {
             user.getFavorites().add(restaurantDto);
+        }else {
+            user.getFavorites().remove(restaurantDto);
         }
         userRepository.save(user);
         return restaurantDto;
